@@ -40,12 +40,16 @@ command :'certificates:download' do |c|
     certificates = try{agent.list_certificates(type ||= :development)}
 
     say_warning "No #{type} certificates found." and abort if certificates.empty?
-
-    certificate = choose "Select a certificate to download:", *certificates
-    if filename = agent.download_certificate(certificate)
-      say_ok "Successfully downloaded: '#{filename}'"
+    certificate_index = certificates.index{|x| x.name.match args[1]}
+    if certificate_index == 0
+      certificate = choose "Select a certificate to download:", *certificates
     else
-      say_error "Could not download certificate"
+      certificate = certificates[certificate_index]
     end
+      if filename = agent.download_certificate(certificate)
+        say_ok "Successfully downloaded: '#{filename}'"
+      else
+        say_error "Could not download certificate"
+      end
   end
 end
