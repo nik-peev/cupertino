@@ -14,7 +14,7 @@ module Cupertino
 
         self.user_agent_alias = 'Mac Safari'
 
-        self.profile_type = "development"
+        self.profile_type = :development
 
         self.log ||= Logger.new(STDOUT)
         self.log.level = Logger::ERROR
