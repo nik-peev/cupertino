@@ -7,12 +7,14 @@ require 'logger'
 module Cupertino
   module ProvisioningPortal
     class Agent < ::Mechanize
-      attr_accessor :username, :password, :team
+      attr_accessor :username, :password, :team, :profile_type
 
       def initialize
         super
 
         self.user_agent_alias = 'Mac Safari'
+
+        self.profile_type = "development"
 
         self.log ||= Logger.new(STDOUT)
         self.log.level = Logger::ERROR
@@ -281,22 +283,18 @@ module Cupertino
                 app_id.development_properties << "#{feature}:Enabled"
               end
             end
-
-            end
           end
 
           row['enabledFeatures'].each do |feature|
-              if feature == "push"
-                if row['isDevPushEnabled'] == true
-                  app_id.development_properties << "push:Enabled"
-                else
-                  app_id.development_properties << "push:Configurable"
-                end
-              else 
-                app_id.development_properties << "#{feature}:Enabled"
+            if feature == "push"
+              if row['isProdPushEnabled'] == true
+                app_id.distribution_properties << "push:Enabled"
+              else
+                app_id.distribution_properties << "push:Configurable"
               end
-            end
-
+            else 
+              app_id.distribution_properties << "#{feature}:Enabled"
+           end
           end
 
           app_ids << app_id
